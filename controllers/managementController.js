@@ -1,4 +1,4 @@
-const  {schools, students} = require('../models/appModels'); 
+const  {schoolModel, teachers, students, pickupModel} = require('../models/appModels'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const signUp = async(req, res)=>{
     try {
         const {teacherName, password, email, phone, address} = req.body
-        const teacher =  await schools.findOne({email: email})
+        const teacher =  await schoolModel.findOne({email: email})
         if(teacher){
             return res.status(200).json({
                 message: "School already registered"
@@ -15,7 +15,7 @@ const signUp = async(req, res)=>{
         const salt =  bcrypt.genSaltSync(12);
         const hashPassword = bcrypt.hashSync(password, salt);
         
-        const management = new schools({
+        const management = new schoolModel({
             teacherName, 
             password: hashPassword, 
             email, 
@@ -37,7 +37,7 @@ const signUp = async(req, res)=>{
 const logIn = async(req, res)=>{
     try {
         const {email, password} = req.body;
-        const checkTeacher = await schools.findOne({email})
+        const checkTeacher = await schoolModel.findOne({email})
         if(!checkTeacher){
             return res.status(401).json({
               message:'User not found',
@@ -51,7 +51,8 @@ const logIn = async(req, res)=>{
         }  
         const token = jwt.sign({
             teacherId:checkTeacher._id,
-            email:checkTeacher.email
+            email:checkTeacher.email,
+           // role: checkTeacher.role.enum['teacher']
         }, process.env.secret, {expiresIn:'30mins'})
 
         await checkTeacher.save();
@@ -66,24 +67,100 @@ const logIn = async(req, res)=>{
     
 }
 
+//Generate student pick up ID, to change after each week
+const generateStudentPickupID = async (length = 7) => {
+    const currentTime = new Date();
+    const studentId = req.student._id
+    const checkStudent = await students.findById(studentId)
+    if(!checkStudent){
+        return res.send('Student Identity not found')
+    }
+    let idDoc = await pickupModel.findOne();
+  
+    if (idDoc && (currentTime - idDoc.generatedAt) < 7 * 24 * 60 * 60 * 1000) {
+      // Less than a week has passed, return the existing ID
+      return idDoc.pickupID;
+    }
+  
+    // Generate a new ID
+    let pickupID = crypto.randomBytes(length)
+      .toString("base64")
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .substring(0, length);
+  
+    while (pickupID.length < length) {
+      pickupID += crypto.randomBytes(1)
+        .toString("base64")
+        .replace(/[^a-zA-Z0-9]/g, '');
+      pickupID = pickupID.substring(0, length);
+    }
+  
+    // Save the new ID and update the timestamp
+    if (idDoc) {
+      idDoc.pickupID = pickupID;
+      idDoc.generatedAt = currentTime;
+      await idDoc.save();
+    } else {
+      idDoc = new pickupModel({ pickupID, generatedAt: currentTime });
+      await idDoc.save();
+      checkStudent.studentPickUpID.push(idDoc);
+      checkStudent.save()
+    }
+  
+    return pickupID;
+  };
+  
+
 const createStudent = async (req,res)=>{
     try {
         const {fullName, address, dob, gender, classIn, guardianPhone, guardianEmail} = req.body
-        
+        const teacher = await schoolModel.find()
         const student = await students.findOne({guardianEmail: guardianEmail})
         if(student){
             return res.status(200).json({
                 message: "This email already registered a student"
             })
         }
-        const newStudent = new students.create({
+
+        //Generate student ID based on current year, month the school was established and serially as the student was register
+        const year = 1634
+        //Inintialized the current highest student ID
+        let currentStudentID = 0;
+        const generateID = ()=>{
+            //Increment the current ID by 1 for the new student
+            currentStudentID += 1;
+            return `${year}`+ currentStudentID
+
+        }
+
+        
+
+           //Function to generate alphanumeric string without weekly change
+        // const generateStudentPickupID = ( length=7 ) =>{
+        //    let pickupID= crypto.randomBytes(length)
+        //    .toString("base64")
+        //    .replace(/[^a-zA-Z0-9]/g, '')
+        //    .substring(0, length)
+  
+        //  while(pickupID.length < length){
+        //     pickupID += crypto.randomBytes(1)
+        //  .toString("base64")
+        //  .replace(/[^a-zA-Z0-9]/g, '');
+        //  pickupID = pickupID.substring(0, length)
+        // }
+        //    return pickupID;
+        // }
+        
+        const newStudent = new students({
             fullName, 
             address, 
             dob, 
             gender,
             classIn, 
             guardianPhone, 
-            guardianEmail
+            guardianEmail,
+            studentId: generateID(),
+            pickUp_Id: generateStudentPickupID()
         })
         // const token = jwt.sign({
         //     studentId:newStudent.studentId,
@@ -91,7 +168,7 @@ const createStudent = async (req,res)=>{
         // })
         
         await newStudent.save();
-        newStudent.studentData.push(newStudent._id)
+        teacher.studentData.push(newStudent._id)
         await student.save()
         return res.status(200).json({
             message:"student registered successfully",
@@ -107,7 +184,7 @@ const createStudent = async (req,res)=>{
 const getOneStudent = async(req, res)=>{
     try {
         const studentId = req.params.id
-        const checkStudent = await schools.findById(studentId)
+        const checkStudent = await schoolModel.findById(studentId)
         if(!checkStudent){
             return res.status(404).json({
                 message:"Student not found"

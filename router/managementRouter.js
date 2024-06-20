@@ -1,5 +1,5 @@
 const express = require('express')
-const {signUp, logIn, createStudent, getOneStudent, studentByClass} = require('../controllers/appController')
+const {signUp, logIn, createStudent, getOneStudent, studentByClass} = require('../controllers/managementController')
 
 
 const router = express.Router();
