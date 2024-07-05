@@ -57,7 +57,7 @@ const schoolSchema = new mongoose.Schema({
     }
 
 },{timestamps: true})
-const teachers = mongoose.model('Teachers', schoolSchema)
+const teachers = mongoose.model('Teachers', teacherSchema)
 
 //Pupil / Student schema
 const studentSchema = new mongoose.Schema({
