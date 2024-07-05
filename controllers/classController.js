@@ -3,13 +3,13 @@ const classModel = require('../models/classModel')
 
 exports.createClass = async (req, res) => {
     try {
-        const { type,  } = req.body;
+        const { classGrade  } = req.body;
 
         const classes = await classModel.create({
-            type
+            classGrade
         })
         // console.log('category', category)
-        await category.save();
+        await classes.save();
 
         res.status(201).json({
             message: 'class created successfully',

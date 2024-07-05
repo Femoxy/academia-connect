@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 
 const classSchema = new mongoose.Schema({
-    
+    classGrade:{
+        type:String
+    },
     students:{
         type:mongoose.Schema.ObjectId,
         ref:'studentData',
