@@ -168,7 +168,7 @@ const createStudent = async (req,res)=>{
         // })
         
         await newStudent.save();
-        teacher.studentData.push(newStudent._id)
+        // management.studentData.push(newStudent._id)
         await student.save()
         return res.status(200).json({
             message:"student registered successfully",
