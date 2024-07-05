@@ -85,8 +85,8 @@ const studentSchema = new mongoose.Schema({
     type: String
   },
   classIn:{
-    type:String,
-    enum:['Basic 1', 'Basic 2', 'Basic 3', 'Basic 4', 'Basic 5', 'Basic 6']
+    type:mongoose.Schema.ObjectId,
+    ref:'classes'
   },
   gender:{
     type:String
