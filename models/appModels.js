@@ -14,7 +14,7 @@ const schoolSchema = new mongoose.Schema({
         type:String
     },
     announcement:{
-      type:String
+      type:Array
     },
     isAdmin:{
       type:Boolean,
