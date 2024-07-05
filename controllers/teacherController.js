@@ -27,7 +27,7 @@ exports.teacherProfile = async(req,res) =>{
 }
 
 
-exports.getStudentsByClass =async(req,res){
+exports.getStudentsByClass =async(req,res) => {
     try {
         const {classIn} = req.body
         const studentClass = await students.find({classIn:classIn});
