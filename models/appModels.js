@@ -59,6 +59,20 @@ const schoolSchema = new mongoose.Schema({
 },{timestamps: true})
 const teachers = mongoose.model('Teachers', schoolSchema)
 
+
+const assignmetnSchema = new mongoose.Schema({
+  title:{
+      type: String,
+  },
+  description:{
+    type:String
+  },
+
+  },{timestamps: true})
+  const assignmentModel = mongoose.model('assignment', assignmetnSchema)
+
+
+
 //Pupil / Student schema
 const studentSchema = new mongoose.Schema({
   fullName:{
