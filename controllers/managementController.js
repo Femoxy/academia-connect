@@ -122,7 +122,7 @@ const createStudent = async (req,res)=>{
             })
         }
 
-        //Generate student ID based on current year, month the school was established and serially as the student was register
+        //Generate student ID based on the day and the age of school owner and increment serially as new student are registered
         const year = 1634
         //Inintialized the current highest student ID
         let currentStudentID = 0;
