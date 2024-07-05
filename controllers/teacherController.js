@@ -89,11 +89,7 @@ exports.teacherProfile = async(req,res) =>{
 }
 
 
-<<<<<<< HEAD
-exports.getStudentsByClass =async(req,res) => {
-=======
 exports.getStudentsByClass =async(req,res)=>{
->>>>>>> 666dbda7c8a2c5f363c4146d84d7cea1fee3383c
     try {
         const {classIn} = req.body
         const studentClass = await students.find({classIn:classIn});
