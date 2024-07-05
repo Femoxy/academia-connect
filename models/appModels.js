@@ -13,19 +13,13 @@ const schoolSchema = new mongoose.Schema({
     address:{
         type:String
     },
-    announcement:{
-      type:Array
-    },
     isAdmin:{
       type:Boolean,
       default: false
   },
-    // role:{
-    //     type:String,
-    //     enum:['Owner', 'Principal', 'VP']
-    // },
+    
     },{timestamps: true})
-    const schoolModel = mongoose.model('Management', schoolSchema)
+    const schoolModel = mongoose.model('Managements', schoolSchema)
 
 
 
@@ -46,10 +40,6 @@ const schoolSchema = new mongoose.Schema({
     address:{
       type:String
     }, 
-    // role:{
-    //   type: String,
-    //  // enum: ['Class Teacher', 'Subject Teacher']
-    // },
     
     studentData:{
       type:mongoose.Schema.Types.ObjectId,
@@ -57,20 +47,7 @@ const schoolSchema = new mongoose.Schema({
     }
 
 },{timestamps: true})
-const teachers = mongoose.model('Teachers', schoolSchema)
-
-
-const assignmetnSchema = new mongoose.Schema({
-  title:{
-      type: String,
-  },
-  description:{
-    type:String
-  },
-
-  },{timestamps: true})
-  const assignmentModel = mongoose.model('assignment', assignmetnSchema)
-
+const teachers = mongoose.model('Teachers', teacherSchema)
 
 
 //Pupil / Student schema
@@ -110,6 +87,9 @@ const studentSchema = new mongoose.Schema({
         type:String
     }
   },
+  date: {
+    type: String
+  },
   studentId:{
     type:String
   },
@@ -133,6 +113,7 @@ const idSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  
 });
 
 const pickupModel = mongoose.model('PickupIDs', idSchema);
